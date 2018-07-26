@@ -1,6 +1,7 @@
 package stephan.r.compete.project_euler;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * https://www.hackerrank.com/contests/projecteuler/challenges/euler017/problem
@@ -11,9 +12,9 @@ import java.util.HashMap;
 public class NumberToWord {
 
 	/**
-	 * Each number are store with their respective text-based format
-	 * We don't need to specify the numbers greater than 19 because it result from
-	 * a composite number. 
+	 * Each number is store with their respective text-based format
+	 * We don't need to specify all the numbers from 0 to one trillion 
+	 * because many of their is result from a composite number. 
 	 * 
 	 * eg: 21 -> 20(Twenty) + 1(One) or 29 -> 20(Twenty) + 9(Nine)
 	 * 	   95 -> 90(Ninety) + 5(Five)
@@ -25,44 +26,56 @@ public class NumberToWord {
 		put(6, "Six"); put(7, "Seven"); put(8, "Eight"); put(9, "Nine"); put(10, "Ten"); put(11, "Eleven");
 		put(12, "Twelve"); put(13, "Thriteen"); put(14, "Fourteen"); put(15, "Fifteen"); put(16, "Sixteen");
 		put(17, "Seventeen"); put(18, "Eighteen"); put(19, "Nineteen"); put(20, "Twenty"); put(30, "Thirty");
-		put(40, "Fourty"); put(50, "Fifty"); put(60, "Sixty"); put(70, "Seventy"); put(90, "Ninety");
-		put(100, "Hundred"); put(1000, "Tausand"); put(1000000, "Million"); put(1000000000, "Billion");
+		put(40, "Forty"); put(50, "Fifty"); put(60, "Sixty"); put(70, "Seventy"); put(80, "Eighty"); put(90, "Ninety");
+		put(100, "Hundred"); put(1000, "Thousand"); put(1000000, "Million"); put(1000000000, "Billion");
 	}};
-	
-	/**
-	 * @param a
-	 * @param b
-	 * 
-	 * @return
-	 */
-	static String getWord(int a, int... b) {
-		return (b.length > 0) 
-				? String.format("%s %s", words.get(a), words.get(b[0])) 
-				: words.get(a);
-	}
-	
-	/*static int count(int n) {
-		int sum = 0;
-		int reminder = 0;
+
+	static String numberToWord(Long n) {
+		StringBuilder txt = new StringBuilder();
+		long reminder = 0;
 		
-		if(n < 20 || words.get(n) != null) {
-			return words.get(n);
+		if(n < 20 || (n != 100 && n != 1000 && n != 1000000 && n != 1000000000 && words.get(n.intValue()) != null)) {
+			return words.get(n.intValue());
 		} else {			
-			if(n > 999 && n < 10000) {
-				reminder = n % 1000;
-				sum += count((n - reminder) / 1000) + count(1000);
-			} else if(n > 99 && n < 1000) {
-				reminder = n % 100;
-				sum += count((n - reminder) / 100) + count(100);
+			if(n == Math.pow(10, 12)) {
+				txt.append("One Trillion");
+			} else if(n >= Math.pow(10, 9) && n < Math.pow(10, 12)) {
+				reminder = (long) (n % Math.pow(10, 9));
+				txt.append(numberToWord((long) ((n - reminder) / Math.pow(10, 9)))).append(" ").append(words.get((int) Math.pow(10, 9)));
+			} else if(n >= Math.pow(10, 6) && n < Math.pow(10, 9)) {
+				reminder = (long) (n % Math.pow(10, 6));
+				txt.append(numberToWord((long) ((n - reminder) / Math.pow(10, 6)))).append(" ").append(words.get((int) Math.pow(10, 6)));
+			} else if(n >= Math.pow(10, 3) && n < Math.pow(10, 6)) {
+				reminder = (long) (n % Math.pow(10, 3));
+				txt.append(numberToWord((long) ((n - reminder) / Math.pow(10, 3)))).append(" ").append(words.get((int) Math.pow(10, 3)));
+			} else if(n >= Math.pow(10, 2) && n < Math.pow(10, 3)) {
+				reminder = (long) (n % Math.pow(10, 2));
+				txt.append(words.get((int) ((n - reminder) / Math.pow(10, 2)))).append(" ").append(words.get((int) Math.pow(10, 2)));
 			} else {
-				sum += count(n - (n % 10)) + count(n % 10);
+				if(n < Math.pow(10, 2)) {
+					txt.append(words.get((int) (n - (n % 10))));
+					
+					if(n % 10 > 0) {
+						txt.append(" ").append(words.get((int) (n % 10)));	
+					}
+				}
 			}
 		}
 		
-		return (reminder > 0) ? sum + count(reminder) : sum;
-	}*/
+		return (reminder > 0) ? txt.append(" ").append(numberToWord(reminder)).toString() : txt.toString();
+	}
 	
 	public static void main(String[] args) {
-
+		Scanner scanner = new Scanner(System.in);
+		int t = scanner.nextInt();
+		
+		for(int i = 0; i < t; i++) {
+			long start = System.currentTimeMillis();
+			
+			System.out.println(numberToWord(scanner.nextLong()));
+			System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
+		}
+		
+		scanner.close();
 	}
 }

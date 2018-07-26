@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class TheTimeInWords {
 
 	/**
-	 * Each number from 0 to 30 are store with their respective text-based format
+	 * Each number from 0 to 30 is store with their respective text-based format
 	 * Special case for 0, 15, and 30 because they refers each to "o'clock", "quarter", and "half"
 	 * in that order
 	 * We don't need to specify the numbers between 20 and 30 exclusive because it result from

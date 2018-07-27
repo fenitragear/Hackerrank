@@ -26,7 +26,7 @@ public class SummationOfPrimes {
 	 * 		Output: all i such that A[i] is true.
 	 * 
 	 */
-	static void loadAllPrime() {
+	static void loadAllSumPrime() {
 		boolean arr[] = new boolean[1000000 + 1];
 		long sumPrime = 0;
 		
@@ -52,7 +52,7 @@ public class SummationOfPrimes {
 	}
 	
 	public static void main(String[] args) {
-		loadAllPrime();
+		loadAllSumPrime();
 	        
         Scanner scanner = new Scanner(System.in);
         int t = scanner.nextInt();

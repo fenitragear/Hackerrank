@@ -30,6 +30,10 @@ public class NumberToWord {
 		put(100, "Hundred"); put(1000, "Thousand"); put(1000000, "Million"); put(1000000000, "Billion");
 	}};
 
+	/**
+	 * @param n
+	 * @return
+	 */
 	static String numberToWord(Long n) {
 		StringBuilder txt = new StringBuilder();
 		long reminder = 0;

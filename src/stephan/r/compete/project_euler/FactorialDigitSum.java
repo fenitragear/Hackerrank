@@ -2,6 +2,7 @@ package stephan.r.compete.project_euler;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Scanner;
 
 /**
  * https://www.hackerrank.com/contests/projecteuler/challenges/euler020
@@ -10,6 +11,26 @@ import java.math.BigInteger;
  *
  */
 public class FactorialDigitSum {
+	
+	private static final double LOG10 = Math.log(10.0);
+
+	/**
+	 * Computes the natural logarithm of a BigInteger. Works for really big
+	 * integers (practically unlimited)
+	 * 
+	 * @param val Argument, positive integer
+	 * @return Natural logarithm, as in <tt>Math.log()</tt>
+	 */
+	public static double logBigInteger(BigInteger val) {
+	    int blex = val.bitLength() - 1022;
+	    
+	    if (blex > 0)
+	        val = val.shiftRight(blex);
+	    
+	    double res = Math.log10(val.doubleValue());
+	    
+	    return blex > 0 ? res + blex * LOG10 : res;
+	}
 	
 	/**
 	 * Digit sum formula:
@@ -20,22 +41,24 @@ public class FactorialDigitSum {
 	 * 		x is the number to calculate the digit
 	 * 		b is the base
 	 *  
-	 * @param n
+	 * @param x
+	 * 
 	 * @return
 	 */
-	static long sum(int n) {
-		long factorial = factorial(n);
-		long sum = 0;
+	static int sum(int x) {
+		BigInteger factorial = factorial(x);
+		BigDecimal sum = BigDecimal.ZERO;
+		long lim = Math.round(logBigInteger(factorial));
 		
-		for(int j = 0; j < Math.log10(factorial); j++) {		
-			double a = 1 / Math.pow(10, j);
-			double b = Math.pow(10, j + 1);
-			double c = Math.pow(10, j);
+		for(int i = 0; i <= lim; i++) {		
+			BigDecimal a = BigDecimal.ONE.divide(BigDecimal.TEN.pow(i));
+			BigInteger b = factorial.mod(BigDecimal.TEN.pow(i + 1).toBigInteger());
+			BigInteger c = factorial.mod(BigDecimal.TEN.pow(i).toBigInteger());
 			
-			sum += a * ((factorial % b) - (factorial % c));
+			sum = sum.add(a.multiply(new BigDecimal(b.subtract(c))));
 		}
-				
-		return sum;
+		
+		return sum.intValue();
 	}
 	
 	/**
@@ -56,10 +79,10 @@ public class FactorialDigitSum {
 	 * 
 	 * @param n
 	 * 
-	 * @return tab[s][r] - where s is the prime factorization and r the power
+	 * @return
 	 */
-	static long factorial(int n) {
-		long factorial = 1;
+	static BigInteger factorial(int n) {
+		BigInteger factorial = BigInteger.valueOf(1);
 		boolean[] tab = new boolean[n + 1];
 		
 		for(int i = 2; i < Math.sqrt(tab.length); i++) {
@@ -85,8 +108,8 @@ public class FactorialDigitSum {
 					r = count++;
 					power += r;
 				}		
-				
-				factorial *= Math.pow(i, power);
+								
+				factorial = factorial.multiply(BigDecimal.valueOf(i).pow(power).toBigInteger());
 			}
 		}
 		
@@ -103,9 +126,16 @@ public class FactorialDigitSum {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		int t = scanner.nextInt();
 		long start = System.currentTimeMillis();
 		
-		System.out.println(sum(10));
+		for(int i = 0; i < t; i++) {
+			System.out.println(sum(scanner.nextInt()));
+		}
+		
 		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
+		
+		scanner.close();
 	}
 }

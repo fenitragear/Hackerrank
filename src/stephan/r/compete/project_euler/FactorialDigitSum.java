@@ -12,78 +12,15 @@ import java.util.Scanner;
  */
 public class FactorialDigitSum {
 	
-	private static final double LOG10 = Math.log(10.0);
-
-	/**
-	 * Computes the natural logarithm of a BigInteger. Works for really big
-	 * integers (practically unlimited)
-	 * 
-	 * @param val Argument, positive integer
-	 * @return Natural logarithm, as in <tt>Math.log()</tt>
-	 */
-	public static double logBigInteger(BigInteger val) {
-	    int blex = val.bitLength() - 1022;
-	    
-	    if (blex > 0)
-	        val = val.shiftRight(blex);
-	    
-	    double res = Math.log10(val.doubleValue());
-	    
-	    return blex > 0 ? res + blex * LOG10 : res;
-	}
+	private static BigInteger[] factorials = new BigInteger[1001];
 	
-	/**
-	 * Digit sum formula:
-	 * 		For n = 0 ... log10(n)
-	 * 			1/b^n * (x mod b^(n + 1) - x mod b^n)
-	 * 
-	 * Where
-	 * 		x is the number to calculate the digit
-	 * 		b is the base
-	 *  
-	 * @param x
-	 * 
-	 * @return
-	 */
-	static int sum(int x) {
-		BigInteger factorial = factorial(x);
-		BigDecimal sum = BigDecimal.ZERO;
-		long lim = Math.round(logBigInteger(factorial));
+	static void factorial() {		
+		boolean[] tab = new boolean[1001];
+		int index = 2;
 		
-		for(int i = 0; i <= lim; i++) {		
-			BigDecimal a = BigDecimal.ONE.divide(BigDecimal.TEN.pow(i));
-			BigInteger b = factorial.mod(BigDecimal.TEN.pow(i + 1).toBigInteger());
-			BigInteger c = factorial.mod(BigDecimal.TEN.pow(i).toBigInteger());
-			
-			sum = sum.add(a.multiply(new BigDecimal(b.subtract(c))));
-		}
-		
-		return sum.intValue();
-	}
-	
-	/**
-	 * Sieve Of Eratosthenes
-	 * 
-	 * Compute r:
-	 * 		for each prime number denoted by x
-	 * 			val1 = the number that x can divide between 1 and n
-	 * 				while val1 is greater than 1
-	 * 					find the number that x can divide between 1 and val1
-	 *  
-	 * Factorial Prime Factorization formula:
-	 * 		n! = product(s_i^r_i) = 2^r_1 * 3^r_2 * 5^r_3 * ... * p
-	 * 
-	 * Where:
-	 * 		p denote the largest prime
-	 * 		r denote the power of each prime number
-	 * 
-	 * @param n
-	 * 
-	 * @return
-	 */
-	static BigInteger factorial(int n) {
-		BigInteger factorial = BigInteger.valueOf(1);
-		boolean[] tab = new boolean[n + 1];
+		// Initial f(0) = f(1) = 1
+		factorials[0] = BigInteger.ONE;
+		factorials[1] = BigInteger.ONE;
 		
 		for(int i = 2; i < Math.sqrt(tab.length); i++) {
 			if(!tab[i]) {
@@ -93,45 +30,52 @@ public class FactorialDigitSum {
 			}
 		}
 		
-		for(int i = 2; i < tab.length; i++) {
-			if(!tab[i]) {
-				int r = n;
-				int power = 0;
-				
-				while(r > 1) {
-					int count = 0;
+		for(int n = 2; n < tab.length; n++) {
+			BigInteger factorial = BigInteger.ONE;
+			
+			for(int i = 2; i < tab.length; i++) {
+				if(!tab[i]) {
+					int r = n;
+					int power = 0;
 					
-					for(int x = i; x <= r; x += i) {
-						count++;
+					while(r > 1) {
+						int count = 0;
+						
+						for(int x = i; x <= r; x += i) {
+							count++;
+						}
+						
+						r = count++;
+						power += r;
 					}
 					
-					r = count++;
-					power += r;
-				}		
-								
-				factorial = factorial.multiply(BigDecimal.valueOf(i).pow(power).toBigInteger());
+					factorial = factorial.multiply(BigDecimal.valueOf(i).pow(power).toBigInteger());
+					
+				}
 			}
-		}
-		
-		return factorial;
+			
+			factorials[index++] = factorial;
+		}		
 	}
 	
-	/**
-	 * n! means n × (n − 1) × ... × 3 × 2 × 1
-	 * For example, 10! = 10 × 9 × ... × 3 × 2 × 1 = 3628800, 
-	 * and the sum of the digits in the number 10! is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.
-	 * 
-	 * Find the sum of the digits in the number 100!
-	 * 
-	 * @param args
-	 */
 	public static void main(String[] args) {
+		factorial();
+		
 		Scanner scanner = new Scanner(System.in);
 		int t = scanner.nextInt();
 		long start = System.currentTimeMillis();
 		
 		for(int i = 0; i < t; i++) {
-			System.out.println(sum(scanner.nextInt()));
+			BigInteger m = factorials[scanner.nextInt()];
+			BigInteger sum = BigInteger.ZERO;
+			
+			while(m.compareTo(BigInteger.ZERO) > 0) {				
+				BigInteger n = m.mod(BigInteger.TEN);
+	            sum = sum.add(n);
+	            m = m.divide(BigInteger.TEN);
+	        }
+			
+			System.out.println(sum);
 		}
 		
 		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");

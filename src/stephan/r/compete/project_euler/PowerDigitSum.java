@@ -1,6 +1,5 @@
 package stephan.r.compete.project_euler;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Scanner;
 
@@ -15,33 +14,8 @@ public class PowerDigitSum {
 	private static BigInteger[] powers = new BigInteger[10001];
 	
 	/**
-	 * Digit sum formula:
-	 * 		For n = 0 ... log10(n)
-	 * 			1/b^n * (x mod b^(n + 1) - x mod b^n)
 	 * 
-	 * Where
-	 * 		x is the number to calculate the digit
-	 * 		b is the base
-	 *  
-	 * @param powerDigit
-	 * 
-	 * @return
 	 */
-	static int sum(BigInteger powerDigit) {
-		BigDecimal sum = BigDecimal.ZERO;
-		long lim = Math.round(Math.log10(powerDigit.doubleValue()));
-				
-		for(int i = 0; i <= lim; i++) {		
-			BigDecimal a = BigDecimal.ONE.divide(BigDecimal.TEN.pow(i));
-			BigInteger b = powerDigit.mod(BigDecimal.TEN.pow(i + 1).toBigInteger());
-			BigInteger c = powerDigit.mod(BigDecimal.TEN.pow(i).toBigInteger());
-			
-			sum = sum.add(a.multiply(new BigDecimal(b.subtract(c))));
-		}		
-		
-		return sum.intValue();
-	}
-	
 	static void power() {
 		for(int i = 0; i < 10001; i++) {
 			powers[i] = BigInteger.valueOf(2).pow(i);
@@ -53,13 +27,21 @@ public class PowerDigitSum {
 		
 		Scanner scanner = new Scanner(System.in);
 		int t = scanner.nextInt();
-		
-		
+				
 		for(int i = 0; i < t; i++) {
 			int p = scanner.nextInt();
 			long start = System.currentTimeMillis();
 			
-			System.out.println(sum(powers[p]));
+			BigInteger m = powers[p];
+			BigInteger sum = BigInteger.ZERO;
+			
+			while(m.compareTo(BigInteger.ZERO) > 0) {				
+				BigInteger n = m.mod(BigInteger.TEN);
+	            sum = sum.add(n);
+	            m = m.divide(BigInteger.TEN);
+	        }
+			
+			System.out.println(sum);
 			System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
 		}
 		

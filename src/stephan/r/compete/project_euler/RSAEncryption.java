@@ -1,6 +1,6 @@
 package stephan.r.compete.project_euler;
 
-import java.math.BigInteger;
+import java.util.Scanner;
 
 /**
  * https://www.hackerrank.com/contests/projecteuler/challenges/euler182
@@ -13,17 +13,16 @@ public class RSAEncryption {
 	
 	/**
 	 * 
-	 *  
 	 * @param a
 	 * @param b
 	 * @return
 	 */
-	static BigInteger gcd(BigInteger a, BigInteger b) {
-		if (a.compareTo(BigInteger.valueOf(0)) < 0 || b.compareTo(BigInteger.valueOf(0)) < 0)
+	static long gcd(long a, long b) {
+		if (a < 0 || b < 0)
 			throw new IllegalArgumentException("Negative number");
 		
-		while (b.compareTo(BigInteger.valueOf(0)) != 0) {
-			BigInteger z = a.mod(b);
+		while (b != 0) {
+			long z = a % b;
 			a = b;
 			b = z;
 		}
@@ -38,53 +37,46 @@ public class RSAEncryption {
 	 * @param b
 	 * @return
 	 */
-	static Boolean isCoprime(BigInteger a, BigInteger b) {
-		if(((a.or(b)).and(BigInteger.valueOf(1))).compareTo(BigInteger.valueOf(0)) == 0)
+	static Boolean isCoprime(long a, long b) {
+		if(((a|b) & 1) == 0)
 			return false;
 		
-		return gcd(a, b).compareTo(BigInteger.valueOf(1)) == 0;
+		return gcd(a, b) == 1;
 	}
 	
 	/**
+	 * e and phi must be coprime
+	 * Unconcealed message is at the minimum => (1 + gcd((e - 1), (p - 1)) * (1 + gcd((e - 1), (q - 1)))
+	 * 
 	 * @param p
 	 * @param q
+	 * 
 	 * @return
 	 */
-	static BigInteger sumOfAllValueE(long p, long q) {
-		BigInteger phi = BigInteger.valueOf(p - 1).multiply(BigInteger.valueOf(q - 1));
-		BigInteger sumValueOfE = BigInteger.valueOf(0);
+	static long sumOfAllValueE(long p, long q) {
+		long phi = (p - 1) * (q - 1);
+		long sumValueOfE = 0;
 		
-		for(BigInteger e = BigInteger.valueOf(3); e.compareTo(phi) <= 0; e = e.add(BigInteger.valueOf(3))) {
-			// e and phi must be coprime
-			if(!isCoprime(e, phi)) {
-				// Unconcealed message is at the minimum => (1 + gcd((e - 1), (p - 1)) * (1 + gcd((e - 1), (q - 1)))
-				if(BigInteger.valueOf(1).add(gcd(e.subtract(BigInteger.valueOf(1)), BigInteger.valueOf(p - 1)))
-						.multiply(BigInteger.valueOf(1).add(gcd(e.subtract(BigInteger.valueOf(1)), BigInteger.valueOf(q - 1))))
-						.compareTo(BigInteger.valueOf(9)) == 0) {
-					sumValueOfE = sumValueOfE.add(e);
+		for(int e = 3; e < phi; e += 4) {
+			if(isCoprime(e, phi)) {
+				if((gcd((e -1), (p - 1)) + 1) * (gcd((e - 1), (q - 1)) + 1) == 9) {
+					sumValueOfE += e;
 				}
 			}
 		}
-		
-		return sumValueOfE;//.mod(BigInteger.valueOf((long) (Math.pow(10, 9) + 7)));
+						
+		return (long) (sumValueOfE % (Math.pow(10, 9) + 7));
 	}
-
+	
 	public static void main(String[] args) {		
-		// 438
-		long start = System.currentTimeMillis();		
-		System.out.println(sumOfAllValueE(11, 13) + " time took " + (System.currentTimeMillis() - start + "ms"));
+		long start = System.currentTimeMillis();
 		
-		// 399788195976
-		start = System.currentTimeMillis();
-		System.out.println(sumOfAllValueE(1009, 3643) + " time took " + (System.currentTimeMillis() - start + "ms"));
+		Scanner scanner = new Scanner(System.in);
 		
-		//start = System.currentTimeMillis();
-		//System.out.println(sumOfAllValueE(542149, 56179) + " time took " + (System.currentTimeMillis() - start + "ms"));
+		System.out.println(sumOfAllValueE(scanner.nextInt(), scanner.nextInt()));
 		
-		//start = System.currentTimeMillis();
-		//System.out.println(sumOfAllValueE(1634069, 1957391) + " time took " + (System.currentTimeMillis() - start + "ms"));
-		
-		//start = System.currentTimeMillis();
-		//System.out.println(sumOfAllValueE(1115948059, 1294694339) + " time took " + (System.currentTimeMillis() - start + "ms"));
+		scanner.close();
+
+		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
 	}
 }

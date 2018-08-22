@@ -11,23 +11,67 @@ import java.util.Scanner;
  */
 public class RSAEncryption {
 	
+	static long trialDivision(long n) {
+		while(n % 2 == 0) {
+			n /= 2;
+		}
+
+		if(n == 1)
+			return 2;
+		
+		long f = 3;
+
+		while((f * f) <= n) {
+			if(n % f == 0) {
+				n /= f;
+			} else {
+				f += 2;
+			}
+		}
+
+		return (n > 2) ? n : f;
+	}
+	
 	/**
-	 * 
 	 * @param a
 	 * @param b
 	 * @return
 	 */
-	static long gcd(long a, long b) {
-		if (a < 0 || b < 0)
-			throw new IllegalArgumentException("Negative number");
+	static long binary(long a, long b) {
+		int shift;
 		
-		while (b != 0) {
-			long z = a % b;
-			a = b;
-			b = z;
+		if(a == 0) {
+			return b;
 		}
 		
-		return a;
+		if(b == 0) {
+			return a;
+		}
+		
+		for(shift = 0; ((a | b) & 1) == 0; ++shift) {
+			a >>= 1;
+			b >>= 1;
+		}
+		
+		while((a & 1) == 0) {
+			a >>= 1;
+		}
+		
+		do {
+			while((b & 1) == 0) {
+				b >>= 1;
+			}
+			
+			if(a > b) {
+				a ^= b;
+				b ^= a;
+				a ^= b;
+			}
+			
+			b = b - a;
+		} while(b != 0);
+		
+		return a << shift;
 	}
 	
 	/**
@@ -41,7 +85,7 @@ public class RSAEncryption {
 		if(((a|b) & 1) == 0)
 			return false;
 		
-		return gcd(a, b) == 1;
+		return binary(a, b) == 1;
 	}
 	
 	/**
@@ -53,30 +97,34 @@ public class RSAEncryption {
 	 * 
 	 * @return
 	 */
-	static long sumOfAllValueE(long p, long q) {
-		long phi = (p - 1) * (q - 1);
+	static long numberOfUnconcealedMessage(long p, long q) {
+		long pLargestPrimeFactor = trialDivision(p);
+		long qLargestPrimeFactor = trialDivision(q);
+		long phi = p * q;
 		long sumValueOfE = 0;
 		
-		for(int e = 3; e < phi; e += 4) {
-			if(isCoprime(e, phi)) {
-				if((gcd((e -1), (p - 1)) + 1) * (gcd((e - 1), (q - 1)) + 1) == 9) {
-					sumValueOfE += e;
-				}
+		for(long e = 11; e < phi; e += 12) {
+			if(e % pLargestPrimeFactor > 1 && e % qLargestPrimeFactor > 1) {
+				if(isCoprime(e, phi)) {
+					long E = (e - 1);
+					
+					if(binary(E, p) == 2 && binary(E, q) == 2) {
+						sumValueOfE += e;
+					}
+				}	
 			}
 		}
 						
-		return (long) (sumValueOfE % (Math.pow(10, 9) + 7));
+		return sumValueOfE;
 	}
 	
 	public static void main(String[] args) {		
-		long start = System.currentTimeMillis();
-		
+		long start = System.currentTimeMillis();		
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.println(sumOfAllValueE(scanner.nextInt(), scanner.nextInt()));
+		System.out.println(numberOfUnconcealedMessage((scanner.nextInt() - 1), (scanner.nextInt() - 1)));
+		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
 		
 		scanner.close();
-
-		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
 	}
 }

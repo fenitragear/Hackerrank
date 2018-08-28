@@ -105,17 +105,15 @@ public class RSAEncryption {
 		
 		for(long e = 11; e < phi; e += 12) {
 			if(e % pLargestPrimeFactor > 1 && e % qLargestPrimeFactor > 1) {
-				if(isCoprime(e, phi)) {
-					long E = (e - 1);
-					
-					if(binary(E, p) == 2 && binary(E, q) == 2) {
+				if(isCoprime(e, phi)) {					
+					if(binary((e - 1), phi) == 2) {
 						sumValueOfE += e;
 					}
-				}	
-			}
+				}
+			}		
 		}
 						
-		return sumValueOfE;
+		return (long) (sumValueOfE % (Math.pow(10, 9) + 7));
 	}
 	
 	public static void main(String[] args) {		

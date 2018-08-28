@@ -11,6 +11,7 @@ import java.util.Scanner;
  */
 public class JavaInstanceOfKeyword {
 
+	@SuppressWarnings("rawtypes")
 	static String count(ArrayList mylist) {		
 		int a = 0, b = 0, c = 0;
 		  
@@ -28,6 +29,7 @@ public class JavaInstanceOfKeyword {
   		return Integer.toString(a) + " " + Integer.toString(b) + " " + Integer.toString(c);
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void main(String[] args) {
 		ArrayList mylist = new ArrayList();
 	    Scanner scanner = new Scanner(System.in);
@@ -47,6 +49,7 @@ public class JavaInstanceOfKeyword {
 	    }
 	    
 	    System.out.println(count(mylist));
+	    scanner.close();
 	}
 }
 

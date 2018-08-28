@@ -4,7 +4,7 @@ package stephan.r.practice.java;
  * https://www.hackerrank.com/challenges/java-md5/problem
  * TODO
  * 
- * @author StÃ©phan R.
+ * @author Stéphan R.
  *
  */
 public class JavaMD5 {

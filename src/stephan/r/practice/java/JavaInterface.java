@@ -10,6 +10,7 @@ import java.util.Scanner;
  */
 public class JavaInterface {
 
+	@SuppressWarnings("rawtypes")
 	static void ImplementedInterfaceNames(Object o) {
         Class[] theInterfaces = o.getClass().getInterfaces();
         

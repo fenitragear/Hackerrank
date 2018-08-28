@@ -21,6 +21,7 @@ public class NumberToWord {
 	 * 	   101 -> 1(One) * 100(Hundred) + 1(One)
 	 * 	   450 -> 4(Four) * 100(Hundred) + 50(Fifty)
 	 */
+	@SuppressWarnings("serial")
 	private static final HashMap<Integer, String> words = new HashMap<Integer, String>() {{
 		put(0, "Zero"); put(1, "One"); put(2, "Two"); put(3, "Three"); put(4, "Four"); put(5, "Five");
 		put(6, "Six"); put(7, "Seven"); put(8, "Eight"); put(9, "Nine"); put(10, "Ten"); put(11, "Eleven");

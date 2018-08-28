@@ -19,18 +19,8 @@ public class KnightLOnAChessBoard {
 	 */
 	static int[][] knightlOnAChessboard(int n) {
 		int[][] path = new int[n][n];
-		
-		for(int i = 1; i < n; i++) {
-			int move = -1;
-			
-			for(int c = i; c < n; c += i) {
-				//for(int r = 1; r < n; r++) {
-					System.out.println("(" + i + ", " + c + ")");
-				//}
-			}
-		}
-		
-		return null;
+				
+		return path;
     }
     
 	public static void main(String[] args) {		

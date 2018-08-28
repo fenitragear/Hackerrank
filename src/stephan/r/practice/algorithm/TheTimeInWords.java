@@ -20,6 +20,7 @@ public class TheTimeInWords {
 	 * Also, we don't need to specify the numbers greater than 30 because it will be subtract
 	 * by 60
 	 */
+	@SuppressWarnings("serial")
 	private static final HashMap<Integer, String> numberToText = new HashMap<Integer, String>() {{
 		put(0, "o' clock"); put(1, "one"); put(2, "two"); put(3, "three"); put(4, "four"); put(5, "five");
 		put(6, "six"); put(7, "seven"); put(8, "eight"); put(9, "nine"); put(10, "ten");

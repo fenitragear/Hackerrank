@@ -1,9 +1,5 @@
 package stephan.r.practice.algorithm;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * https://www.hackerrank.com/challenges/pangrams/problem
  * 

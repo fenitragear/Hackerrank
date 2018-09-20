@@ -11,13 +11,14 @@ import java.util.Scanner;
  */
 public class RSAEncryption {
 	
-	static long trialDivision(long n) {
-		while(n % 2 == 0) {
+	static long trialDivision2(long n) {		
+		while((n & 1) == 0) {
 			n /= 2;
 		}
 
-		if(n == 1)
+		if(n == 1) {
 			return 2;
+		}			
 		
 		long f = 3;
 
@@ -28,99 +29,67 @@ public class RSAEncryption {
 				f += 2;
 			}
 		}
-
+		
 		return (n > 2) ? n : f;
 	}
 	
-	/**
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	static long binary(long a, long b) {
-		int shift;
-		
-		if(a == 0) {
-			return b;
-		}
-		
-		if(b == 0) {
-			return a;
-		}
-		
-		for(shift = 0; ((a | b) & 1) == 0; ++shift) {
-			a >>= 1;
-			b >>= 1;
-		}
-		
-		while((a & 1) == 0) {
-			a >>= 1;
-		}
-		
-		do {
-			while((b & 1) == 0) {
-				b >>= 1;
-			}
-			
-			if(a > b) {
-				a ^= b;
-				b ^= a;
-				a ^= b;
-			}
-			
-			b = b - a;
-		} while(b != 0);
-		
-		return a << shift;
-	}
+	static long getRemainder(long num, long divisor) {
+        return num - divisor * (num / divisor);
+    }
 	
-	/**
-	 * For integer e, 1 < e < phi, such that gcd(e, phi) == 1
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	static Boolean isCoprime(long a, long b) {
-		if(((a|b) & 1) == 0)
-			return false;
-		
-		return binary(a, b) == 1;
+	static long gcd(long a, long b) {
+	    while (a != 0) {
+	    	if(b != 0) {
+	    		if (a >= b) {
+		        	a = getRemainder(a, b);
+		        } else {
+		        	b = getRemainder(b, a);
+		        }
+	    	} else {
+	    		break;
+	    	}	        
+	    }
+	    
+	    return a + b;
 	}
-	
+		
 	/**
 	 * e and phi must be coprime
-	 * Unconcealed message is at the minimum => (1 + gcd((e - 1), (p - 1)) * (1 + gcd((e - 1), (q - 1)))
+	 * Unconcealed message is at the minimum => (1 + gcd((e - 1), (p - 1)) * (1 + gcd((e - 1), (q - 1))) == 9
 	 * 
-	 * @param p
-	 * @param q
+	 * @param p -> p - 1
+	 * @param q -> q - 1
 	 * 
 	 * @return
 	 */
 	static long numberOfUnconcealedMessage(long p, long q) {
-		long pLargestPrimeFactor = trialDivision(p);
-		long qLargestPrimeFactor = trialDivision(q);
+		long pLargestPrimeFactor = trialDivision2(p);
+		long qLargestPrimeFactor = trialDivision2(q);		
 		long phi = p * q;
 		long sumValueOfE = 0;
 		
-		for(long e = 11; e < phi; e += 12) {
-			if(e % pLargestPrimeFactor > 1 && e % qLargestPrimeFactor > 1) {
-				if(isCoprime(e, phi)) {					
-					if(binary((e - 1), phi) == 2) {
-						sumValueOfE += e;
+		for(int e = 1; e < phi; e += 2) {
+			if(getRemainder(e, 12) == 11) {
+				if(getRemainder(e, pLargestPrimeFactor) <= 1 || getRemainder(e, qLargestPrimeFactor) <= 1) {
+					continue;
+				} else {
+					if(gcd(e, phi) == 1) {
+						if(gcd((e - 1), phi) == 2) {
+							sumValueOfE += e;
+						}
 					}
 				}
-			}		
+			}
 		}
-						
-		return (long) (sumValueOfE % (Math.pow(10, 9) + 7));
+	
+		return sumValueOfE;
 	}
 	
 	public static void main(String[] args) {		
 		long start = System.currentTimeMillis();		
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.println(numberOfUnconcealedMessage((scanner.nextInt() - 1), (scanner.nextInt() - 1)));
+		System.out.println(numberOfUnconcealedMessage((scanner.nextLong() - 1), (scanner.nextLong() - 1)));
 		System.out.println("Solution took " + (System.currentTimeMillis() - start) + "ms");
 		
 		scanner.close();
